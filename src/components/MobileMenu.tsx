@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { CTAButton } from "@/components/CTAButton";
-import { NAV_LINKS, SITE } from "@/lib/constants";
+import { NAV_LINKS } from "@/lib/constants";
 import { gsap, prefersReducedMotion, registerGsap, useGSAP } from "@/lib/gsap";
 
 type MobileMenuProps = {
@@ -22,7 +23,10 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
       if (!panel || !items) return;
 
       if (prefersReducedMotion()) {
-        gsap.set(panel, { autoAlpha: open ? 1 : 0, pointerEvents: open ? "auto" : "none" });
+        gsap.set(panel, {
+          autoAlpha: open ? 1 : 0,
+          pointerEvents: open ? "auto" : "none",
+        });
         return;
       }
 
@@ -59,18 +63,29 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
       aria-hidden={!open}
     >
       <div ref={listRef} className="flex flex-1 flex-col gap-2">
-        {NAV_LINKS.map((link) => (
-          <a
-            key={link.href}
-            href={link.href}
-            onClick={onClose}
-            className="border-b border-[var(--border-subtle)] py-5 text-3xl tracking-tight text-[var(--foreground)]"
-          >
-            {link.label}
-          </a>
-        ))}
+        {NAV_LINKS.map((link) =>
+          link.href.startsWith("/") && !link.href.startsWith("/#") ? (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={onClose}
+              className="border-b border-[var(--border-subtle)] py-5 text-3xl tracking-tight text-[var(--foreground)]"
+            >
+              {link.label}
+            </Link>
+          ) : (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={onClose}
+              className="border-b border-[var(--border-subtle)] py-5 text-3xl tracking-tight text-[var(--foreground)]"
+            >
+              {link.label}
+            </a>
+          )
+        )}
         <div className="menu-cta mt-8">
-          <CTAButton href={SITE.mailto} className="w-full" onClick={onClose}>
+          <CTAButton href="/#access" className="w-full" onClick={onClose}>
             Ask for a build
           </CTAButton>
         </div>

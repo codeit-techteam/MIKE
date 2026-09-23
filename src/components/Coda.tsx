@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { CTAButton } from "@/components/CTAButton";
-import { SITE } from "@/lib/constants";
 import { gsap, prefersReducedMotion, registerGsap, useGSAP } from "@/lib/gsap";
 
 export function Coda() {
@@ -39,7 +38,7 @@ export function Coda() {
           </span>
         </h2>
         <div className="coda-cta mt-10 flex justify-center">
-          <CTAButton href={SITE.mailto}>Ask for a build</CTAButton>
+          <CTAButton href="/#access">Ask for a build</CTAButton>
         </div>
       </div>
     </section>

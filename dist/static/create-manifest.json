@@ -1,0 +1,21 @@
+{
+  "createdAt": "2026-09-23T10:22:20.973Z",
+  "studioVersion": "6.16.0",
+  "version": 3,
+  "workspaces": [
+    {
+      "basePath": "/studio",
+      "dataset": "production",
+      "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\"><rect width=\"32\" height=\"32\" rx=\"2\" fill=\"#b11651\"></rect><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" alignment-baseline=\"middle\" fill=\"hsla(337, 78%, 0%, 1)\" style=\"font-family:Inter, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, &quot;Liberation Sans&quot;, Helvetica, Arial, system-ui, sans-serif;font-weight:500;font-size:13px;transform:translateY(1px)\">MB</text></svg>",
+      "mediaLibrary": {
+        "enabled": false,
+        "__internal": {}
+      },
+      "name": "mike-blog",
+      "projectId": "6imjn5c8",
+      "schema": "86ab972a.create-schema.json",
+      "title": "Mike Blog",
+      "tools": "28d81cb5.create-tools.json"
+    }
+  ]
+}

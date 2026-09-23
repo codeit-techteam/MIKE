@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { MobileMenu } from "@/components/MobileMenu";
-import { NAV_LINKS, SITE } from "@/lib/constants";
+import { NAV_LINKS } from "@/lib/constants";
 import { gsap, prefersReducedMotion, registerGsap, useGSAP } from "@/lib/gsap";
 
 export function Header() {
@@ -64,20 +64,30 @@ export function Header() {
             className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-8 md:flex"
             aria-label="Primary"
           >
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="whitespace-nowrap text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
-              >
-                {link.label}
-              </a>
-            ))}
+            {NAV_LINKS.map((link) =>
+              link.href.startsWith("/") && !link.href.startsWith("/#") ? (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="whitespace-nowrap text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="whitespace-nowrap text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+                >
+                  {link.label}
+                </a>
+              )
+            )}
           </nav>
 
           <div className="relative z-10 hidden md:block">
             <a
-              href={SITE.mailto}
+              href="/#access"
               className="inline-flex min-h-10 items-center justify-center rounded-full px-5 py-2.5 text-xs font-semibold tracking-wide"
               style={{ backgroundColor: "#F5F5F2", color: "#050505" }}
             >

@@ -1,0 +1,951 @@
+[
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 8
+              },
+              {
+                "flag": "max",
+                "constraint": 120
+              }
+            ]
+          }
+        ],
+        "description": "Primary article H1 on the website.",
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "level": "warning",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 320
+              }
+            ],
+            "message": "Keep excerpts concise for cards and social previews."
+          }
+        ],
+        "description": "Used on cards, listings, and as Open Graph fallback.",
+        "name": "excerpt",
+        "type": "text"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "fields": [
+          {
+            "validation": [
+              {
+                "level": "error",
+                "rules": [
+                  {
+                    "flag": "custom"
+                  }
+                ]
+              }
+            ],
+            "description": "Describe the image. Required when an image is set.",
+            "name": "alt",
+            "type": "string",
+            "title": "Alternative text"
+          },
+          {
+            "name": "caption",
+            "type": "string"
+          }
+        ],
+        "name": "featuredImage",
+        "type": "image",
+        "title": "Featured image"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              }
+            ]
+          }
+        ],
+        "name": "body",
+        "type": "blockContent"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "to": [
+          {
+            "type": "author"
+          }
+        ],
+        "name": "author",
+        "type": "reference"
+      },
+      {
+        "to": [
+          {
+            "type": "category"
+          }
+        ],
+        "name": "category",
+        "type": "reference"
+      },
+      {
+        "options": {
+          "layout": "tags"
+        },
+        "of": [
+          {
+            "to": [
+              {
+                "type": "tag"
+              }
+            ],
+            "type": "reference",
+            "title": "Reference to tag"
+          }
+        ],
+        "name": "tags",
+        "type": "array"
+      },
+      {
+        "description": "Drafts without a publish date (or a future date) stay off the public site.",
+        "name": "publishedAt",
+        "type": "datetime",
+        "title": "Published at"
+      },
+      {
+        "description": "Only set when the article is genuinely updated.",
+        "name": "updatedAt",
+        "type": "datetime",
+        "title": "Updated at"
+      },
+      {
+        "initialValue": false,
+        "description": "Show this post in the large featured slot on /blog.",
+        "name": "featured",
+        "type": "boolean"
+      },
+      {
+        "initialValue": false,
+        "description": "Shortcut for excluding this post from search indexes and the sitemap.",
+        "name": "noIndex",
+        "type": "boolean",
+        "title": "No index (document-level)"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "description": "Optional. Prefer the SEO object field when setting overrides.",
+        "name": "canonicalUrl",
+        "type": "url",
+        "title": "Canonical URL (document-level)"
+      },
+      {
+        "name": "seo",
+        "type": "seo",
+        "title": "SEO settings"
+      },
+      {
+        "description": "Visible FAQ section. Also powers FAQPage JSON-LD when present.",
+        "of": [
+          {
+            "type": "faqItem",
+            "title": "FAQ item"
+          }
+        ],
+        "name": "faq",
+        "type": "array",
+        "title": "FAQ"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 3
+              }
+            ]
+          }
+        ],
+        "description": "Optional manual overrides. Otherwise related posts are inferred.",
+        "of": [
+          {
+            "to": [
+              {
+                "type": "post"
+              }
+            ],
+            "type": "reference",
+            "title": "Reference to post"
+          }
+        ],
+        "name": "relatedPosts",
+        "type": "array",
+        "title": "Related posts"
+      }
+    ],
+    "name": "post",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "max",
+                "constraint": 80
+              }
+            ]
+          }
+        ],
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "name",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "fields": [
+          {
+            "validation": [
+              {
+                "level": "error",
+                "rules": [
+                  {
+                    "flag": "custom"
+                  }
+                ]
+              }
+            ],
+            "name": "alt",
+            "type": "string",
+            "title": "Alternative text"
+          }
+        ],
+        "name": "image",
+        "type": "image"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 400
+              }
+            ]
+          }
+        ],
+        "name": "bio",
+        "type": "text"
+      }
+    ],
+    "name": "author",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "max",
+                "constraint": 60
+              }
+            ]
+          }
+        ],
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 300
+              }
+            ]
+          }
+        ],
+        "name": "description",
+        "type": "text"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 70
+              }
+            ]
+          }
+        ],
+        "name": "seoTitle",
+        "type": "string",
+        "title": "SEO title"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 180
+              }
+            ]
+          }
+        ],
+        "name": "seoDescription",
+        "type": "text",
+        "title": "SEO description"
+      }
+    ],
+    "name": "category",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "max",
+                "constraint": 60
+              }
+            ]
+          }
+        ],
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      }
+    ],
+    "name": "tag",
+    "type": "document"
+  },
+  {
+    "of": [
+      {
+        "lists": [
+          {
+            "value": "bullet",
+            "title": "Bullet"
+          },
+          {
+            "value": "number",
+            "title": "Numbered"
+          }
+        ],
+        "marks": {
+          "annotations": [
+            {
+              "fields": [
+                {
+                  "validation": [
+                    {
+                      "level": "error",
+                      "rules": [
+                        {
+                          "flag": "uri",
+                          "constraint": {
+                            "options": {
+                              "scheme": [
+                                "/^http$/",
+                                "/^https$/",
+                                "/^mailto$/",
+                                "/^tel$/"
+                              ],
+                              "allowRelative": true,
+                              "relativeOnly": false,
+                              "allowCredentials": false
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "name": "href",
+                  "type": "url",
+                  "title": "URL"
+                },
+                {
+                  "initialValue": false,
+                  "name": "blank",
+                  "type": "boolean",
+                  "title": "Open in new tab"
+                }
+              ],
+              "name": "link",
+              "type": "object"
+            }
+          ],
+          "decorators": [
+            {
+              "value": "strong",
+              "title": "Bold"
+            },
+            {
+              "value": "em",
+              "title": "Italic"
+            },
+            {
+              "value": "code",
+              "title": "Code"
+            }
+          ]
+        },
+        "of": [],
+        "styles": [
+          {
+            "value": "normal",
+            "title": "Normal"
+          },
+          {
+            "value": "h2",
+            "title": "H2"
+          },
+          {
+            "value": "h3",
+            "title": "H3"
+          },
+          {
+            "value": "h4",
+            "title": "H4"
+          },
+          {
+            "value": "blockquote",
+            "title": "Quote"
+          }
+        ],
+        "type": "block"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "fields": [
+          {
+            "validation": [
+              {
+                "level": "error",
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  },
+                  {
+                    "flag": "min",
+                    "constraint": 4
+                  },
+                  {
+                    "flag": "max",
+                    "constraint": 200
+                  }
+                ]
+              }
+            ],
+            "description": "Describe the image. Required for meaningful images.",
+            "name": "alt",
+            "type": "string",
+            "title": "Alternative text"
+          },
+          {
+            "name": "caption",
+            "type": "string"
+          }
+        ],
+        "type": "image"
+      },
+      {
+        "fields": [
+          {
+            "options": {
+              "list": [
+                {
+                  "title": "Plain text",
+                  "value": "text"
+                },
+                {
+                  "title": "TypeScript",
+                  "value": "typescript"
+                },
+                {
+                  "title": "JavaScript",
+                  "value": "javascript"
+                },
+                {
+                  "title": "JSON",
+                  "value": "json"
+                },
+                {
+                  "title": "Bash",
+                  "value": "bash"
+                },
+                {
+                  "title": "CSS",
+                  "value": "css"
+                },
+                {
+                  "title": "HTML",
+                  "value": "html"
+                }
+              ]
+            },
+            "initialValue": "text",
+            "validation": [
+              {
+                "level": "error",
+                "rules": [
+                  {
+                    "flag": "valid",
+                    "constraint": [
+                      "text",
+                      "typescript",
+                      "javascript",
+                      "json",
+                      "bash",
+                      "css",
+                      "html"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "name": "language",
+            "type": "string"
+          },
+          {
+            "rows": 8,
+            "validation": [
+              {
+                "level": "error",
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  }
+                ]
+              }
+            ],
+            "name": "code",
+            "type": "text"
+          },
+          {
+            "name": "filename",
+            "type": "string"
+          }
+        ],
+        "type": "object",
+        "name": "code",
+        "title": "Code block"
+      },
+      {
+        "fields": [
+          {
+            "options": {
+              "list": [
+                {
+                  "title": "Note",
+                  "value": "note"
+                },
+                {
+                  "title": "Tip",
+                  "value": "tip"
+                },
+                {
+                  "title": "Important",
+                  "value": "important"
+                }
+              ],
+              "layout": "radio"
+            },
+            "initialValue": "note",
+            "validation": [
+              {
+                "level": "error",
+                "rules": [
+                  {
+                    "flag": "valid",
+                    "constraint": [
+                      "note",
+                      "tip",
+                      "important"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "name": "tone",
+            "type": "string"
+          },
+          {
+            "rows": 3,
+            "validation": [
+              {
+                "level": "error",
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  }
+                ]
+              }
+            ],
+            "name": "body",
+            "type": "text",
+            "title": "Text"
+          }
+        ],
+        "type": "object",
+        "name": "callout"
+      }
+    ],
+    "name": "blockContent",
+    "type": "array",
+    "title": "Body"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "max",
+                "constraint": 200
+              }
+            ]
+          }
+        ],
+        "name": "question",
+        "type": "string"
+      },
+      {
+        "rows": 4,
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "max",
+                "constraint": 2000
+              }
+            ]
+          }
+        ],
+        "name": "answer",
+        "type": "text"
+      }
+    ],
+    "name": "faqItem",
+    "type": "object",
+    "title": "FAQ item"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "warning",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 70
+              }
+            ],
+            "message": "Keep SEO titles under ~60 characters when possible."
+          }
+        ],
+        "description": "Recommended ~50–60 characters. Falls back to the post title.",
+        "name": "seoTitle",
+        "type": "string",
+        "title": "SEO title"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "level": "warning",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 180
+              }
+            ],
+            "message": "Keep meta descriptions under ~160 characters when practical."
+          }
+        ],
+        "description": "Recommended ~140–160 characters. Falls back to the excerpt.",
+        "name": "metaDescription",
+        "type": "text",
+        "title": "Meta description"
+      },
+      {
+        "description": "Optional. Falls back to the post title.",
+        "name": "ogTitle",
+        "type": "string",
+        "title": "Open Graph title"
+      },
+      {
+        "rows": 3,
+        "description": "Optional. Falls back to the excerpt.",
+        "name": "ogDescription",
+        "type": "text",
+        "title": "Open Graph description"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Optional. Falls back to the featured image.",
+        "fields": [
+          {
+            "validation": [
+              {
+                "level": "error",
+                "rules": [
+                  {
+                    "flag": "custom"
+                  }
+                ]
+              }
+            ],
+            "name": "alt",
+            "type": "string",
+            "title": "Alternative text"
+          }
+        ],
+        "name": "ogImage",
+        "type": "image",
+        "title": "Open Graph image"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "description": "Optional absolute URL. Defaults to https://michaelross.ai/blog/[slug].",
+        "name": "canonicalUrl",
+        "type": "url",
+        "title": "Canonical URL"
+      },
+      {
+        "initialValue": false,
+        "description": "If enabled, search engines are asked not to index this post.",
+        "name": "noIndex",
+        "type": "boolean",
+        "title": "No index"
+      }
+    ],
+    "name": "seo",
+    "type": "object",
+    "title": "SEO"
+  }
+]

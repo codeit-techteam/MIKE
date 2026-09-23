@@ -23,11 +23,13 @@ export const NAV_LINKS = [
   { href: "/#ask", label: "Getting it back" },
   { href: "/#how", label: "How it works" },
   { href: "/#manners", label: "Good manners" },
+  { href: "/blog", label: "Blog" },
 ] as const;
 
 export const FOOTER_LINKS = [
   { href: "/how-it-works", label: "How Mike works" },
   { href: "/features", label: "Mike's features" },
+  { href: "/blog", label: "Blog" },
   { href: "/faq", label: "Questions about Mike" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },

@@ -91,6 +91,14 @@ export const PAGES = {
     lastModified: CONTENT_UPDATED,
     summary: "Help with using Mike, memory, dictation and accounts.",
   },
+  blog: {
+    path: "/blog",
+    title: "Mike AI Blog — Memory, Personal AI and Knowledge",
+    description:
+      "Ideas on memory, personal AI and knowledge from Mike AI. Notes on personal AI memory assistants, second brains, and remembering what matters.",
+    lastModified: CONTENT_UPDATED,
+    summary: "Editorial notes on memory, personal AI and knowledge from Mike AI.",
+  },
 } as const satisfies Record<string, SitePage>;
 
 export const INDEXABLE_PAGES: SitePage[] = Object.values(PAGES);

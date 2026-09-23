@@ -55,7 +55,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${instrumentSerif.variable}`}
       suppressHydrationWarning
     >
-      <body>
+      <body suppressHydrationWarning>
         <Script id="js-flag" strategy="beforeInteractive">
           {`document.documentElement.classList.add("js")`}
         </Script>
