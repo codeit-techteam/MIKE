@@ -1,0 +1,469 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050505;
+  --surface: #0b0b0b;
+  --surface-elevated: #111111;
+  --surface-high: #151515;
+  --foreground: #f5f5f2;
+  --muted: #a0a0a0;
+  --muted-dim: #6f6f6f;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --accent: #c8c4ff;
+  --accent-warm: #e8e4d9;
+  --max-width: 72rem;
+  --section-spacing: clamp(5rem, 12vw, 9rem);
+  --radius: 0.75rem;
+  --radius-lg: 1.25rem;
+  --font-body: var(--font-geist-sans), "Segoe UI", sans-serif;
+  --font-editorial: var(--font-instrument), Georgia, serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-high: var(--surface-high);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-dim: var(--muted-dim);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-accent: var(--accent);
+  --color-accent-warm: var(--accent-warm);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-editorial);
+}
+
+/* Mirrors STORY_MQ in src/lib/gsap.ts. Without JS, on small screens, or with reduced
+   motion, chapters keep their stacked document layout. */
+@custom-variant story {
+  @media (min-width: 1024px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+    :root.js & {
+      @slot;
+    }
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+.pages-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pages-scroller::-webkit-scrollbar {
+  height: 6px;
+}
+
+.pages-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pages-scroller::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(200, 196, 255, 0.28);
+  color: var(--foreground);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+section[id],
+[id="top"],
+[id="ask"],
+[id="problem"],
+[id="how"],
+[id="wiki"],
+[id="pages"],
+[id="manners"],
+[id="context"],
+[id="privacy"],
+[id="access"] {
+  scroll-margin-top: 5.5rem;
+}
+
+/* Pinned chapters start flush with the viewport, so anchors should land on their top. */
+@media (min-width: 1024px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+  :root.js .story-chapter {
+    scroll-margin-top: 0;
+  }
+}
+
+:root:not(.js) .hero-anim {
+  opacity: 1;
+}
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ambient-glow {
+  position: absolute;
+  left: -20%;
+  top: -30%;
+  width: 140%;
+  height: 160%;
+  background:
+    radial-gradient(38% 30% at 22% 18%, rgba(232, 228, 217, 0.055), transparent 70%),
+    radial-gradient(34% 28% at 78% 30%, rgba(200, 196, 255, 0.05), transparent 70%),
+    radial-gradient(40% 32% at 50% 82%, rgba(200, 196, 255, 0.035), transparent 70%);
+  will-change: transform, opacity;
+}
+
+.ambient-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 3px;
+}
+
+.container {
+  width: min(100% - 2rem, var(--max-width));
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .container {
+    width: min(100% - 3rem, var(--max-width));
+  }
+}
+
+.section {
+  padding-block: var(--section-spacing);
+}
+
+.eyebrow {
+  display: inline-block;
+  margin: 0 0 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-dim);
+}
+
+.display {
+  font-family: var(--font-editorial);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Privacy policy long-form */
+.privacy-page {
+  padding-top: clamp(6.5rem, 12vw, 8.5rem);
+  padding-bottom: clamp(4rem, 10vw, 7rem);
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(200, 196, 255, 0.06), transparent 55%),
+    var(--background);
+}
+
+.privacy-shell {
+  width: min(100% - 2rem, 48rem);
+}
+
+@media (min-width: 768px) {
+  .privacy-shell {
+    width: min(100% - 3rem, 48rem);
+  }
+}
+
+.privacy-section {
+  padding-block: clamp(2.75rem, 6vw, 3.75rem);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.privacy-faq-section {
+  border-bottom: 0;
+}
+
+.privacy-h2 {
+  margin: 0;
+  font-family: var(--font-editorial);
+  font-size: clamp(1.85rem, 4.2vw, 2.75rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--foreground);
+}
+
+.privacy-h3 {
+  margin: 1.75rem 0 0.75rem;
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.privacy-lede {
+  margin: 1rem 0 0;
+  max-width: 40rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.privacy-body {
+  margin: 1rem 0 0;
+  max-width: 40rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.privacy-list {
+  margin: 1.25rem 0 0;
+  padding-left: 1.15rem;
+  max-width: 40rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.privacy-list li + li {
+  margin-top: 0.55rem;
+}
+
+.privacy-note {
+  margin: 1.5rem 0 0;
+  max-width: 40rem;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--accent-warm);
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+.privacy-inline-link {
+  color: var(--accent-warm);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.privacy-glance {
+  margin: 0;
+}
+
+.privacy-glance-row {
+  display: grid;
+  gap: 0.35rem;
+  padding-block: 1.15rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.privacy-glance-row:last-child {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+@media (min-width: 640px) {
+  .privacy-glance-row {
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: baseline;
+  }
+}
+
+.privacy-glance-row dt {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-dim);
+}
+
+.privacy-glance-row dd {
+  margin: 0;
+  color: var(--foreground);
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  line-height: 1.45;
+}
+
+.privacy-flow-step {
+  background: var(--surface-elevated);
+}
+
+.privacy-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.privacy-table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.privacy-table th,
+.privacy-table td {
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: top;
+}
+
+.privacy-table thead th {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted-dim);
+  background: var(--surface-elevated);
+}
+
+.privacy-table tbody th {
+  font-weight: 500;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+.privacy-table tbody td {
+  color: var(--muted);
+}
+
+.privacy-table tbody tr:last-child th,
+.privacy-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+@media (max-width: 639px) {
+  .privacy-table {
+    min-width: 0;
+  }
+
+  .privacy-table thead {
+    display: none;
+  }
+
+  .privacy-table,
+  .privacy-table tbody,
+  .privacy-table tr,
+  .privacy-table th,
+  .privacy-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .privacy-table tr {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .privacy-table tr:last-child {
+    border-bottom: 0;
+  }
+
+  .privacy-table tbody th {
+    padding: 0 0 0.5rem;
+    white-space: normal;
+    font-size: 1.05rem;
+  }
+
+  .privacy-table tbody td {
+    padding: 0.35rem 0;
+  }
+
+  .privacy-table tbody td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 0.15rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-dim);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .privacy-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .hero-anim {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
