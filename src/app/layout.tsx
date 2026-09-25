@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Instrument_Serif } from "next/font/google";
 import Script from "next/script";
-import { SITE } from "@/lib/constants";
+import { BuildAccessProvider } from "@/components/build-access/BuildAccessProvider";
 import { JsonLd } from "@/components/JsonLd";
+import { SITE } from "@/lib/constants";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -60,7 +61,7 @@ export default function RootLayout({
           {`document.documentElement.classList.add("js")`}
         </Script>
         <JsonLd />
-        {children}
+        <BuildAccessProvider>{children}</BuildAccessProvider>
       </body>
     </html>
   );
