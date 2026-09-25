@@ -1,10 +1,8 @@
 export type BetaRequestData = {
-  name: string;
+  phone: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  country: string;
-  iphoneModel: string;
-  source: string;
-  memoryInterest: string;
 };
 
 export type BetaRequestResponse = {
@@ -13,43 +11,52 @@ export type BetaRequestResponse = {
 };
 
 export const BETA_FIELD_LIMITS = {
-  name: 100,
+  phone: 20,
+  firstName: 100,
+  lastName: 100,
   email: 254,
-  country: 100,
-  iphoneModel: 100,
-  source: 200,
-  memoryInterest: 2000,
 } as const;
 
 export const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_DIGITS_PATTERN = /^\d{8,15}$/;
 
-export function validateBetaRequestData(data: BetaRequestData): string | null {
-  const name = data.name.trim();
+export function digitsOnly(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+export function validatePhoneDigits(digits: string): string | null {
+  if (!digits) {
+    return "Please enter your phone number.";
+  }
+  if (!PHONE_DIGITS_PATTERN.test(digits) || digits.length > BETA_FIELD_LIMITS.phone) {
+    return "Please enter a valid phone number.";
+  }
+  return null;
+}
+
+export function validateProfileData(
+  data: Pick<BetaRequestData, "firstName" | "lastName" | "email">
+): string | null {
+  const firstName = data.firstName.trim();
+  const lastName = data.lastName.trim();
   const email = data.email.trim();
-  const country = data.country.trim();
-  const iphoneModel = data.iphoneModel.trim();
-  const source = data.source.trim();
-  const memoryInterest = data.memoryInterest.trim();
 
-  if (!name || !email || !country || !iphoneModel || !source || !memoryInterest) {
+  if (!firstName || !lastName || !email) {
     return "Please complete the required fields.";
   }
 
-  if (!EMAIL_PATTERN.test(email)) {
+  if (
+    firstName.length > BETA_FIELD_LIMITS.firstName ||
+    lastName.length > BETA_FIELD_LIMITS.lastName ||
+    email.length > BETA_FIELD_LIMITS.email
+  ) {
     return "Please check the form details and try again.";
   }
 
-  if (
-    name.length > BETA_FIELD_LIMITS.name ||
-    email.length > BETA_FIELD_LIMITS.email ||
-    country.length > BETA_FIELD_LIMITS.country ||
-    iphoneModel.length > BETA_FIELD_LIMITS.iphoneModel ||
-    source.length > BETA_FIELD_LIMITS.source ||
-    memoryInterest.length > BETA_FIELD_LIMITS.memoryInterest
-  ) {
-    return "Please check the form details and try again.";
+  if (!EMAIL_PATTERN.test(email)) {
+    return "Please enter a valid email address.";
   }
 
   return null;
@@ -62,37 +69,30 @@ export function validateBetaRequestData(data: BetaRequestData): string | null {
  * public by design (it only aliases to the recipient inbox).
  */
 export function buildWeb3FormsPayload(data: BetaRequestData, accessKey: string) {
-  const name = data.name.trim();
+  const phone = data.phone.trim();
+  const firstName = data.firstName.trim();
+  const lastName = data.lastName.trim();
   const email = data.email.trim();
-  const country = data.country.trim();
-  const iphoneModel = data.iphoneModel.trim();
-  const source = data.source.trim();
-  const memoryInterest = data.memoryInterest.trim();
+  const name = `${firstName} ${lastName}`.trim();
 
   return {
     access_key: accessKey,
-    subject: `Mike beta request from ${name}`,
+    subject: `Mike build request from ${name}`,
     from_name: "Mike",
     replyto: email,
     name,
+    first_name: firstName,
+    last_name: lastName,
     email,
-    country,
-    iphone_model: iphoneModel,
-    source,
-    memory_interest: memoryInterest,
+    phone,
     // Do not send botcheck here — a JSON `false` can be treated as filled
     // and silently drop the email while still returning success.
     message: [
-      "A new private beta request was submitted on michaelross.ai.",
+      "A new build request was submitted on michaelross.ai.",
       "",
       `Name: ${name}`,
       `Email: ${email}`,
-      `Country: ${country}`,
-      `iPhone model: ${iphoneModel}`,
-      `How they heard about Mike: ${source}`,
-      "",
-      "What they most want Mike to remember:",
-      memoryInterest,
+      `Phone: ${phone}`,
     ].join("\n"),
   };
 }

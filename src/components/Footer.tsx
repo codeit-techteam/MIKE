@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { AskForBuildLink } from "@/components/build-access/AskForBuildButton";
 import { FOOTER_LINKS, SITE } from "@/lib/constants";
 
 export function Footer() {
@@ -21,7 +24,11 @@ export function Footer() {
           <ul className="grid grid-cols-2 gap-x-6 gap-y-3 sm:justify-items-end">
             {FOOTER_LINKS.map((link) => (
               <li key={link.href}>
-                {link.href.startsWith("/") && !link.href.startsWith("/#") ? (
+                {link.href === "/#access" ? (
+                  <AskForBuildLink className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]">
+                    {link.label}
+                  </AskForBuildLink>
+                ) : link.href.startsWith("/") && !link.href.startsWith("/#") ? (
                   <Link
                     href={link.href}
                     className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"

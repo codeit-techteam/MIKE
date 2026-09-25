@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { CTAButton } from "@/components/CTAButton";
+import { AskForBuildButton } from "@/components/build-access/AskForBuildButton";
 import { gsap, prefersReducedMotion, registerGsap, useGSAP } from "@/lib/gsap";
 
 export function Coda() {
@@ -38,7 +38,7 @@ export function Coda() {
           </span>
         </h2>
         <div className="coda-cta mt-10 flex justify-center">
-          <CTAButton href="/#access">Ask for a build</CTAButton>
+          <AskForBuildButton />
         </div>
       </div>
     </section>

@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { CTAButton } from "@/components/CTAButton";
+import { AskForBuildButton } from "@/components/build-access/AskForBuildButton";
 import { NAV_LINKS } from "@/lib/constants";
 import { gsap, prefersReducedMotion, registerGsap, useGSAP } from "@/lib/gsap";
 
@@ -85,9 +85,9 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           )
         )}
         <div className="menu-cta mt-8">
-          <CTAButton href="/#access" className="w-full" onClick={onClose}>
+          <AskForBuildButton className="w-full" onClick={onClose}>
             Ask for a build
-          </CTAButton>
+          </AskForBuildButton>
         </div>
       </div>
     </div>

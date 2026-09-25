@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { AskForBuildButton } from "@/components/build-access/AskForBuildButton";
 import { CTAButton } from "@/components/CTAButton";
 import { ProductPhone } from "@/components/ProductPhone";
 import { MIKE_DEFINITION } from "@/lib/constants";
@@ -121,7 +122,7 @@ export function Hero() {
 
             <div className="mt-7 flex flex-wrap items-center gap-3 md:mt-8">
               <div className="hero-cta hero-anim opacity-0">
-                <CTAButton href="/#access">Ask for a build</CTAButton>
+                <AskForBuildButton />
               </div>
               <div className="hero-cta hero-anim opacity-0">
                 <CTAButton href="#how" variant="secondary">

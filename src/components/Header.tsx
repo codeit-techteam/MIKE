@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { AskForBuildLink } from "@/components/build-access/AskForBuildButton";
 import { MobileMenu } from "@/components/MobileMenu";
 import { NAV_LINKS } from "@/lib/constants";
 import { gsap, prefersReducedMotion, registerGsap, useGSAP } from "@/lib/gsap";
@@ -86,13 +87,12 @@ export function Header() {
           </nav>
 
           <div className="relative z-10 hidden md:block">
-            <a
-              href="/#access"
+            <AskForBuildLink
               className="inline-flex min-h-10 items-center justify-center rounded-full px-5 py-2.5 text-xs font-semibold tracking-wide"
               style={{ backgroundColor: "#F5F5F2", color: "#050505" }}
             >
               Ask for a build
-            </a>
+            </AskForBuildLink>
           </div>
 
           <button
