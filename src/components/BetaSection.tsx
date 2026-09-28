@@ -52,8 +52,8 @@ export function BetaSection() {
                 Try Mike before everyone else.
               </h2>
               <p className="mt-6 max-w-xl text-[var(--muted)] md:text-lg">
-                Mike is currently in a small private test on iPhone. Ask for a build, tell us a
-                little about yourself, then message Mike on WhatsApp to get started.
+                Mike is currently in a small private test on iPhone. Join as a beta tester, tell
+                us a little about yourself, then message Mike on WhatsApp to get started.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -78,12 +78,12 @@ export function BetaSection() {
                   {
                     step: "01",
                     title: "Your number",
-                    body: "Private on screen — shown as XXXX while you type.",
+                    body: "Your WhatsApp number, so Mike can reach you.",
                   },
                   {
                     step: "02",
                     title: "About you",
-                    body: "Name and email so we can send your build.",
+                    body: "Name and email so we can send your beta invite.",
                   },
                   {
                     step: "03",

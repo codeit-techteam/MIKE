@@ -62,7 +62,7 @@ export function BuildAccessProvider({ children }: { children: ReactNode }) {
   return (
     <BuildAccessContext.Provider value={value}>
       {children}
-      <BuildAccessModal open={isOpen} onClose={closeBuildAccess} />
+      {isOpen ? <BuildAccessModal open onClose={closeBuildAccess} /> : null}
     </BuildAccessContext.Provider>
   );
 }

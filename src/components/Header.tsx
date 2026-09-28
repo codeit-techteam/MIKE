@@ -88,10 +88,10 @@ export function Header() {
 
           <div className="relative z-10 hidden md:block">
             <AskForBuildLink
-              className="inline-flex min-h-10 items-center justify-center rounded-full px-5 py-2.5 text-xs font-semibold tracking-wide"
+              className="inline-flex min-h-10 items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-xs font-semibold tracking-wide"
               style={{ backgroundColor: "#F5F5F2", color: "#050505" }}
             >
-              Ask for a build
+              Join as Beta Tester
             </AskForBuildLink>
           </div>
 

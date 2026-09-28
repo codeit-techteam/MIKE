@@ -77,7 +77,7 @@ export function buildWeb3FormsPayload(data: BetaRequestData, accessKey: string) 
 
   return {
     access_key: accessKey,
-    subject: `Mike build request from ${name}`,
+    subject: `Mike beta tester request from ${name}`,
     from_name: "Mike",
     replyto: email,
     name,
@@ -88,7 +88,7 @@ export function buildWeb3FormsPayload(data: BetaRequestData, accessKey: string) 
     // Do not send botcheck here — a JSON `false` can be treated as filled
     // and silently drop the email while still returning success.
     message: [
-      "A new build request was submitted on michaelross.ai.",
+      "A new beta tester request was submitted on michaelross.ai.",
       "",
       `Name: ${name}`,
       `Email: ${email}`,

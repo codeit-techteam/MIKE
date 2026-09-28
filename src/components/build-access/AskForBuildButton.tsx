@@ -12,7 +12,7 @@ type AskForBuildButtonProps = {
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick" | "type" | "children">;
 
 export function AskForBuildButton({
-  children = "Ask for a build",
+  children = "Join as Beta Tester",
   className,
   variant = "primary",
   onClick,
@@ -43,7 +43,7 @@ type AskForBuildLinkProps = {
 
 /** Text-style control that opens the build modal (footer, inline links). */
 export function AskForBuildLink({
-  children = "Ask for a build",
+  children = "Join as Beta Tester",
   className,
   ...props
 }: AskForBuildLinkProps) {

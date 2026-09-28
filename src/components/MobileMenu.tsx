@@ -86,7 +86,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         )}
         <div className="menu-cta mt-8">
           <AskForBuildButton className="w-full" onClick={onClose}>
-            Ask for a build
+            Join as Beta Tester
           </AskForBuildButton>
         </div>
       </div>

@@ -51,7 +51,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: "where-is-mike-available",
     question: "Where is Mike available?",
     answer:
-      "Mike is currently being tested privately on iPhone. It is free while it is in testing. Ask for a build on this site, or email hello@michaelross.ai.",
+      "Mike is currently being tested privately on iPhone. It is free while it is in testing. Join as a beta tester on this site, or email hello@michaelross.ai.",
   },
   {
     id: "how-mike-handles-privacy",

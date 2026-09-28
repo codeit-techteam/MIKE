@@ -4,18 +4,20 @@ import {
   FormEvent,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
-  type ClipboardEvent,
-  type KeyboardEvent,
+  type ChangeEvent,
 } from "react";
 import { CTAButton } from "@/components/CTAButton";
 import { WhatsAppQrStep } from "@/components/WhatsAppQrStep";
 import {
   BUILD_ACCESS_COUNTRIES,
   BUILD_ACCESS_STEPS,
-  formatMaskedPhone,
-  maskE164Display,
+  caretAfterDigits,
+  formatInternationalPhone,
+  formatNationalPhone,
+  normalizeNationalDigits,
   openMikeWhatsApp,
   type BuildAccessCountryId,
   type FlowStep,
@@ -24,7 +26,6 @@ import {
   BETA_FIELD_LIMITS,
   WEB3FORMS_ENDPOINT,
   buildWeb3FormsPayload,
-  digitsOnly,
   validatePhoneDigits,
   validateProfileData,
   type BetaRequestData,
@@ -91,7 +92,9 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
 
   const selectedCountry =
     BUILD_ACCESS_COUNTRIES.find((entry) => entry.id === countryId) ?? BUILD_ACCESS_COUNTRIES[0];
-  const maskedNational = formatMaskedPhone(nationalDigits);
+  const formattedNational = formatNationalPhone(nationalDigits, selectedCountry);
+  const phoneComplete = nationalDigits.length === selectedCountry.nationalLength;
+  const pendingCaretDigits = useRef<number | null>(null);
   const stepIndex = BUILD_ACCESS_STEPS.findIndex((entry) => entry.id === step);
 
   const resetFlow = () => {
@@ -108,11 +111,6 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
   const clearError = () => {
     if (errorMessage) setErrorMessage("");
   };
-
-  useEffect(() => {
-    if (open) return;
-    resetFlow();
-  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -170,48 +168,35 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open, onClose, isSubmitting]);
 
-  const appendPhoneDigits = (incoming: string) => {
-    setNationalDigits((current) =>
-      (current + digitsOnly(incoming)).slice(0, selectedCountry.nationalLength)
-    );
-  };
-
-  const handlePhoneKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.metaKey || event.ctrlKey || event.altKey) return;
-
-    if (event.key === "Backspace") {
-      event.preventDefault();
-      clearError();
-      setNationalDigits((current) => current.slice(0, -1));
-      return;
-    }
-
-    if (event.key === "Delete") {
-      event.preventDefault();
-      clearError();
-      setNationalDigits("");
-      return;
-    }
-
-    if (/^\d$/.test(event.key)) {
-      event.preventDefault();
-      clearError();
-      appendPhoneDigits(event.key);
-    }
-  };
-
-  const handlePhonePaste = (event: ClipboardEvent<HTMLInputElement>) => {
-    event.preventDefault();
+  const handlePhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
     clearError();
-    let pasted = digitsOnly(event.clipboardData.getData("text"));
-    if (!pasted) return;
+    const { value, selectionStart } = event.target;
+    let next = normalizeNationalDigits(value, selectedCountry);
+    let digitsBeforeCaret = value
+      .slice(0, selectionStart ?? value.length)
+      .replace(/\D/g, "").length;
 
-    if (pasted.startsWith(selectedCountry.dial)) {
-      pasted = pasted.slice(selectedCountry.dial.length);
+    // Backspacing over a space removes nothing, so drop the digit before it instead.
+    const deletedOnlySeparator =
+      next === nationalDigits && value.length < formattedNational.length;
+    if (deletedOnlySeparator && digitsBeforeCaret > 0) {
+      next = next.slice(0, digitsBeforeCaret - 1) + next.slice(digitsBeforeCaret);
+      digitsBeforeCaret -= 1;
     }
 
-    setNationalDigits(pasted.slice(0, selectedCountry.nationalLength));
+    pendingCaretDigits.current = Math.min(digitsBeforeCaret, next.length);
+    setNationalDigits(next);
   };
+
+  // Keep the caret next to the digit the user just edited after spaces are re-inserted.
+  useLayoutEffect(() => {
+    const input = phoneInputRef.current;
+    const digits = pendingCaretDigits.current;
+    if (!input || digits === null || document.activeElement !== input) return;
+    pendingCaretDigits.current = null;
+    const position = caretAfterDigits(input.value, digits);
+    input.setSelectionRange(position, position);
+  }, [nationalDigits]);
 
   const handlePhoneContinue = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -222,6 +207,12 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
       (formElement.elements.namedItem("website") as HTMLInputElement | null)?.value ?? "";
     if (honeypot.trim()) return;
 
+    if (!nationalDigits) {
+      setErrorMessage("Please enter your phone number.");
+      phoneInputRef.current?.focus();
+      return;
+    }
+
     const fullDigits = `${selectedCountry.dial}${nationalDigits}`;
     const validationError = validatePhoneDigits(fullDigits);
     if (validationError) {
@@ -229,8 +220,12 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
       return;
     }
 
-    if (nationalDigits.length < Math.min(8, selectedCountry.nationalLength)) {
-      setErrorMessage("Please enter a valid phone number.");
+    if (!phoneComplete) {
+      const missing = selectedCountry.nationalLength - nationalDigits.length;
+      setErrorMessage(
+        `That number looks short — ${selectedCountry.label} numbers have ${selectedCountry.nationalLength} digits (${missing} to go).`
+      );
+      phoneInputRef.current?.focus();
       return;
     }
 
@@ -317,7 +312,7 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
       <button
         type="button"
         className="absolute inset-0 bg-[rgba(0,0,0,0.72)] backdrop-blur-[2px] animate-[beta-step-in_200ms_ease-out]"
-        aria-label="Close ask for a build"
+        aria-label="Close beta tester sign-up"
         onClick={() => {
           if (!isSubmitting) onClose();
         }}
@@ -336,7 +331,7 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
             <p className="text-[0.65rem] uppercase tracking-[0.16em] text-[var(--muted-dim)]">
               Private beta
             </p>
-            <p className="mt-0.5 text-sm text-[var(--muted)]">Ask for a Mike build</p>
+            <p className="mt-0.5 text-sm text-[var(--muted)]">Join as a Beta Tester</p>
           </div>
           <button
             type="button"
@@ -410,14 +405,13 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
 
               <div className="text-center">
                 <h2 id={titleId} className="display text-[clamp(1.85rem,4vw,2.4rem)] leading-[1.1]">
-                  Sign in to Mike
+                  Join the Mike beta
                 </h2>
                 <p
                   id={descriptionId}
                   className="mt-3 text-sm leading-relaxed text-[var(--muted)] md:text-base"
                 >
-                  Enter your number. Digits stay private on screen — we only use it to reach you
-                  about your build.
+                  Enter your WhatsApp number. We only use it to reach you about the beta.
                 </p>
               </div>
 
@@ -436,8 +430,13 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
                       value={countryId}
                       onChange={(event) => {
                         clearError();
-                        setCountryId(event.target.value as BuildAccessCountryId);
-                        setNationalDigits("");
+                        const nextId = event.target.value as BuildAccessCountryId;
+                        const nextCountry =
+                          BUILD_ACCESS_COUNTRIES.find((entry) => entry.id === nextId) ??
+                          BUILD_ACCESS_COUNTRIES[0];
+                        setCountryId(nextId);
+                        setNationalDigits((current) => current.slice(0, nextCountry.nationalLength));
+                        phoneInputRef.current?.focus();
                       }}
                       className="h-11 cursor-pointer appearance-none rounded-xl border-0 bg-transparent py-2 pl-3 pr-8 text-sm text-[var(--foreground)] outline-none transition-colors hover:bg-[rgba(245,245,242,0.04)]"
                       aria-label="Country code"
@@ -465,26 +464,47 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
                     ref={phoneInputRef}
                     id="build-phone"
                     name="phone"
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="off"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel-national"
                     autoCorrect="off"
                     spellCheck={false}
                     required
-                    maxLength={14}
-                    placeholder="XXXX XXX XXXX"
-                    value={maskedNational}
-                    onChange={() => {
-                      /* Digits handled in keydown/paste so the field never shows numbers. */
-                    }}
-                    onKeyDown={handlePhoneKeyDown}
-                    onPaste={handlePhonePaste}
-                    aria-label="Phone number, digits are masked"
-                    className="min-w-0 flex-1 bg-transparent py-3 pl-3 pr-4 font-mono text-[1.05rem] tracking-[0.18em] text-[var(--foreground)] outline-none placeholder:tracking-[0.18em] placeholder:text-[var(--muted-dim)]"
+                    placeholder={selectedCountry.placeholder}
+                    value={formattedNational}
+                    onChange={handlePhoneChange}
+                    aria-label={`Phone number, ${selectedCountry.nationalLength} digits`}
+                    aria-invalid={errorMessage ? true : undefined}
+                    aria-describedby="build-phone-hint"
+                    className="min-w-0 flex-1 bg-transparent py-3 pl-3 pr-2 text-[1.1rem] tabular-nums tracking-[0.06em] text-[var(--foreground)] outline-none placeholder:text-[var(--muted-dim)]"
                   />
+                  {nationalDigits ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clearError();
+                        setNationalDigits("");
+                        phoneInputRef.current?.focus();
+                      }}
+                      className="mr-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[var(--muted-dim)] transition-colors hover:bg-[rgba(245,245,242,0.06)] hover:text-[var(--foreground)]"
+                      aria-label="Clear phone number"
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  ) : null}
                 </div>
-                <p className="mt-2 text-center text-xs text-[var(--muted-dim)]">
-                  Shown as XXXX while you type
+                <p
+                  id="build-phone-hint"
+                  aria-live="polite"
+                  className={`mt-2 text-center text-xs transition-colors ${
+                    phoneComplete ? "text-[var(--accent-warm)]" : "text-[var(--muted-dim)]"
+                  }`}
+                >
+                  {phoneComplete
+                    ? `✓ ${formatInternationalPhone(nationalDigits, selectedCountry)}`
+                    : nationalDigits
+                      ? `${nationalDigits.length} of ${selectedCountry.nationalLength} digits`
+                      : `${selectedCountry.nationalLength}-digit ${selectedCountry.label} number`}
                 </p>
               </div>
 
@@ -548,7 +568,7 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
                   id={descriptionId}
                   className="mt-3 text-sm leading-relaxed text-[var(--muted)] md:text-base"
                 >
-                  We&apos;ll email you about your build. Your number stays private on this screen.
+                  We&apos;ll email your beta invite and keep you posted.
                 </p>
               </div>
 
@@ -637,9 +657,22 @@ export function BuildAccessModal({ open, onClose }: BuildAccessModalProps) {
                 </div>
               ) : null}
 
-              <p className="mt-5 text-center font-mono text-sm tracking-wide text-[var(--muted-dim)]">
-                {submittedPhone ? maskE164Display(submittedPhone) : "XXXX XXX XXXX"}
-              </p>
+              <div className="mt-5 flex items-center justify-center gap-2 text-sm text-[var(--muted-dim)]">
+                <span className="tabular-nums tracking-wide text-[var(--muted)]">
+                  {formatInternationalPhone(nationalDigits, selectedCountry)}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearError();
+                    setStep("phone");
+                  }}
+                  disabled={isSubmitting}
+                  className="underline underline-offset-2 transition-colors hover:text-[var(--foreground)] disabled:opacity-50"
+                >
+                  Edit
+                </button>
+              </div>
 
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <CTAButton
